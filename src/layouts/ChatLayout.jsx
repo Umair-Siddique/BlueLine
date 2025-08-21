@@ -68,7 +68,7 @@ const ChatLayout = ({ sidebar, main }) => {
 
       {/* Desktop sidebar */}
       <aside
-        className={`hidden sm:block relative h-full bg-gray-800 dark:bg-gray-900 border-r border-gray-700 transition-all duration-300 ease-in-out ${
+        className={`hidden sm:block relative h-full bg-black border-r border-gray-700 transition-all duration-300 ease-in-out ${
           isDesktopCollapsed ? "w-16" : "w-72 md:w-80"
         }`}
       >
@@ -79,7 +79,7 @@ const ChatLayout = ({ sidebar, main }) => {
             aria-label={
               isDesktopCollapsed ? "Expand sidebar" : "Collapse sidebar"
             }
-            className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white shadow-md hover:bg-gray-800 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

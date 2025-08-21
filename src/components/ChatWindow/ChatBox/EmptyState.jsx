@@ -1,37 +1,94 @@
-import { MessageCircle } from "lucide-react";
-import React from "react";
+import { MessageSquare } from "lucide-react";
 
-const EmptyState = ({ isProjectChat }) => (
-  <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-    <div className="text-center max-w-2xl mx-auto">
-      <div className="bg-gray-900/90 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-gray-700/50">
-        {/* Icon Section */}
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-full blur-lg opacity-30 animate-pulse" />
-          <div className="relative bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center mx-auto shadow-xl">
-            <MessageCircle size={40} className="text-white drop-shadow-sm" />
+const ChatAreaEmptyState = () => {
+  const styles = `
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounceSlow {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      33% {
+        transform: translateY(-5px) rotate(1deg);
+      }
+      66% {
+        transform: translateY(5px) rotate(-1deg);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.7s ease-out;
+    }
+
+    .animate-bounce-slow {
+      animation: bounceSlow 3s infinite;
+    }
+
+    .animate-float {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .animate-slide-up {
+      animation: slideUp 0.8s ease-out 0.3s both;
+    }
+  `;
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
+      <div className="flex items-center justify-center h-full bg-white">
+        <div className="relative bg-white border border-gray-200 rounded-2xl p-10 max-w-xl w-full text-center shadow-lg 
+                        animate-fade-in transform transition-all duration-700 hover:shadow-xl hover:scale-105">
+          
+          {/* Circle with icon */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center 
+                            bg-gray-100 shadow-md animate-bounce-slow hover:animate-pulse
+                            transition-all duration-300 hover:bg-gray-200 hover:shadow-lg">
+              <MessageSquare className="w-10 h-10 text-black animate-float" />
+            </div>
           </div>
+
+          {/* Text */}
+          <p className="text-xl font-semibold text-black animate-slide-up">
+            Please select a chat to start conversing with <span className="font-bold hover:text-gray-700 transition-colors duration-300">Blue Lines.</span>
+          </p>
         </div>
-
-        {/* Header */}
-        {!isProjectChat ? (
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
-            Please select a project to start conversing with Binkr Daita.
-          </h1>
-        ) : (
-          <>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
-              How can I help you today?
-            </h1>
-            <p className="text-lg text-gray-300 leading-relaxed">
-              Ask me anything about your uploaded documents! I can help analyze,
-              summarize, and answer questions based on your project files.{" "}
-            </p>
-          </>
-        )}
       </div>
-    </div>
-  </div>
-);
+    </>
+  );
+};
 
-export default EmptyState;
+export default ChatAreaEmptyState;

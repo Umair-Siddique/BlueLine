@@ -5,9 +5,7 @@ export default function Button({ onClick, loading, children }) {
       disabled={loading}
       className="w-full flex justify-center py-3 px-4 border rounded-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
       style={{
-        background: loading
-          ? undefined
-          : '#0A0A0A',
+        background: '#0A0A0A',
         color: '#fff',
         borderColor: '#1E1E1E',
         boxShadow: '0 4px 12px 0 #1E1E1E',

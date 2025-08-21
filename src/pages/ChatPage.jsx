@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import ChatWindow from "../components/ChatWindow";
 import Sidebar from "../components/Sidebar";
+import ChatAreaEmptyState from "../components/ChatWindow/ChatBox/EmptyState";
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 
 const ChatPage = () => {
@@ -79,10 +80,8 @@ const ChatPage = () => {
 
         setRecentChats(sortedChats);
 
-        // Set active chat to most recent but don't fetch messages yet
-        if (sortedChats.length > 0) {
-          setActiveId(sortedChats[0].id);
-        }
+        // Don't automatically set active chat - show empty state initially
+        // User needs to select a chat to start
       } catch (error) {
         console.error("Failed to initialize data:", error);
         toast.error("Failed to load chat history");
@@ -141,7 +140,12 @@ const ChatPage = () => {
       setActiveId(existingEmptyChat.id);
       setShouldFetchMessages(false); // Empty chat doesn't need to fetch
     } else {
-      createNewChat();
+      const newChatId = createNewChat();
+      // Ensure the new chat is set as active
+      if (newChatId) {
+        setActiveId(newChatId);
+        setShouldFetchMessages(false);
+      }
     }
   }, [recentChats, createNewChat]);
 
@@ -187,25 +191,54 @@ const ChatPage = () => {
 
   // Handle chat deletion
   const handleDeleteChat = useCallback(
-    (chatId) => {
-      setRecentChats((prevChats) => {
-        const chatToDelete = prevChats.find((chat) => chat.id === chatId);
-        const updatedChats = prevChats.filter((chat) => chat.id !== chatId);
-
-        // Update active chat if the deleted chat was active
-        if (chatId === activeId) {
-          setShouldFetchMessages(false); // Reset fetch trigger
-          // setActiveId(updatedChats.length > 0 ? updatedChats[0].id : null);
+    async (chatId) => {
+      try {
+        // Get access token from localStorage
+        const accessToken = localStorage.getItem('access_token');
+        
+        if (!accessToken) {
+          toast.error("Authentication required");
+          return;
         }
 
-        if (chatToDelete) {
-          toast.success(`Chat "${chatToDelete.title}" deleted.`, {
-            duration: 2000,
+        // Make API call to delete chat
+        const response = await fetch(`${API_URL}/chat/delete/${chatId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': accessToken,
+          },
+        });
+
+        if (response.ok) {
+          // Remove chat from local state
+          setRecentChats((prevChats) => {
+            const chatToDelete = prevChats.find((chat) => chat.id === chatId);
+            const updatedChats = prevChats.filter((chat) => chat.id !== chatId);
+
+            // Update active chat if the deleted chat was active
+            if (chatId === activeId) {
+              setShouldFetchMessages(false); // Reset fetch trigger
+              // If there are remaining chats, select the first one, otherwise show empty state
+              setActiveId(updatedChats.length > 0 ? updatedChats[0].id : null);
+            }
+
+            if (chatToDelete) {
+              toast.success(`Chat "${chatToDelete.title}" deleted.`, {
+                duration: 2000,
+              });
+            }
+
+            return updatedChats;
           });
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          toast.error(errorData.message || "Failed to delete chat");
         }
-
-        return updatedChats;
-      });
+      } catch (error) {
+        console.error('Error deleting chat:', error);
+        toast.error("Failed to delete chat");
+      }
     },
     [activeId]
   );
@@ -301,11 +334,15 @@ const ChatPage = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden" style={{ background: 'linear-gradient(135deg, #222 0%, #000 100%)' }}>
         <div className="flex-1 relative">
-          <ChatWindow
-            activeId={activeId}
-            onSend={handleSend}
-            shouldFetchMessages={shouldFetchMessages}
-          />
+          {activeId ? (
+            <ChatWindow
+              activeId={activeId}
+              onSend={handleSend}
+              shouldFetchMessages={shouldFetchMessages}
+            />
+          ) : (
+            <ChatAreaEmptyState onNewChat={handleNewChat} />
+          )}
         </div>
       </div>
     </div>

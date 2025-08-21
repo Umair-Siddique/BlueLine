@@ -37,6 +37,7 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
   const [messages, setMessages] = useState([]);
   const [streamingAiResponseText, setStreamingAiResponseText] = useState("");
   const [currentStatus, setCurrentStatus] = useState(null);
+  const [streamingMessageId, setStreamingMessageId] = useState(null);
 
   // Function to fetch messages for a specific chat
   const fetchChatMessages = async (chatId) => {
@@ -142,6 +143,21 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
       let accumulatedAnswer = "";
       let buffer = "";
 
+      // Create streaming message ID
+      const streamingId = uuidv4();
+      setStreamingMessageId(streamingId);
+
+      // Add initial streaming message
+      const initialStreamingMessage = {
+        from: "ai",
+        text: "",
+        id: streamingId,
+        timestamp: new Date().toISOString(),
+        isStreaming: true,
+      };
+      
+      setMessages(prev => [...prev, initialStreamingMessage]);
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -178,14 +194,35 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
               const statusData = JSON.parse(data);
               setCurrentStatus(statusData);
               console.log("Status:", statusData);
+              
+              // Update the streaming message with status
+              setMessages(prev => prev.map(msg => 
+                msg.id === streamingId 
+                  ? { ...msg, text: statusData }
+                  : msg
+              ));
             } else if (event === "token") {
               const tokenData = JSON.parse(data);
               accumulatedAnswer += tokenData;
               setStreamingAiResponseText(accumulatedAnswer);
+              
+              // Update the streaming message with accumulated text
+              setMessages(prev => prev.map(msg => 
+                msg.id === streamingId 
+                  ? { ...msg, text: accumulatedAnswer }
+                  : msg
+              ));
             } else if (event === "done") {
               const doneData = JSON.parse(data);
               console.log("Stream complete:", doneData);
               setCurrentStatus(null);
+              
+              // Finalize the streaming message
+              setMessages(prev => prev.map(msg => 
+                msg.id === streamingId 
+                  ? { ...msg, text: accumulatedAnswer, isStreaming: false }
+                  : msg
+              ));
             }
           } catch (parseError) {
             console.error("Error parsing SSE data:", parseError, "Data:", data);
@@ -196,6 +233,21 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
       return { success: true, response: accumulatedAnswer };
     } catch (error) {
       console.error("Error in sendRetrievalQuery:", error);
+      
+      // If there's an error and we have a streaming message, update it with error
+      if (streamingMessageId) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === streamingMessageId 
+            ? { 
+                ...msg, 
+                text: `Error: ${error.message}`, 
+                isError: true, 
+                isStreaming: false 
+              }
+            : msg
+        ));
+      }
+      
       return { success: false, error: error.message };
     }
   };
@@ -207,6 +259,7 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
     setIsSendingMessage(true);
     setStreamingAiResponseText("");
     setCurrentStatus(null);
+    setStreamingMessageId(null);
 
     try {
       const userMessageObj = {
@@ -221,18 +274,10 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
 
       const apiResponse = await sendRetrievalQuery(userMessage);
 
-      if (apiResponse.success) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            from: "ai",
-            text: apiResponse.response,
-            id: uuidv4(),
-            timestamp: new Date().toISOString(),
-            isStreaming: false,
-          },
-        ]);
-      } else {
+      // Note: The streaming message is already handled in sendRetrievalQuery
+      // We don't need to add another message here for success case
+      if (!apiResponse.success && !streamingMessageId) {
+        // Only add error message if we didn't already handle it in streaming
         setMessages((prev) => [
           ...prev,
           {
@@ -252,6 +297,7 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
       setIsSendingMessage(false);
       setStreamingAiResponseText("");
       setCurrentStatus(null);
+      setStreamingMessageId(null);
     }
   };
 
@@ -278,17 +324,6 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
 
   const currentModel = AI_MODELS.find((model) => model.id === selectedModel);
 
-  // Determine what to show in the streaming message
-  const getStreamingDisplayText = () => {
-    if (currentStatus) {
-      return currentStatus; // Show status like "Retrieving from Pinecone..." or "Generating answer..."
-    }
-    if (streamingAiResponseText) {
-      return streamingAiResponseText; // Show the actual streaming response
-    }
-    return "Thinking..."; // Default fallback
-  };
-
   return (
     <div
       className="flex flex-col h-screen relative chatwindow-custom"
@@ -306,19 +341,7 @@ const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
 
       <div className="flex-1 min-h-0">
         <MessageWindow
-          messages={
-            isSendingMessage
-              ? [
-                  ...messages,
-                  {
-                    from: "ai",
-                    text: getStreamingDisplayText(),
-                    id: "streaming-temp-ai",
-                    isStreaming: true,
-                  },
-                ]
-              : messages
-          }
+          messages={messages}
           isLoadingMessages={isLoadingMessages}
         />
       </div>

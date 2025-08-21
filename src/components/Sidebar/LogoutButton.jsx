@@ -7,8 +7,8 @@ const LogoutButton = ({ onLogout }) => {
         onClick={onLogout}
         className={`logout-btn w-full flex items-center justify-center px-4 py-2 rounded-md bg-red-600 hover:bg-red-700`}
       >
-        <LogOut size={16} className="mr-2" style={{ color: "#fff !important" }} />
-        <span style={{ color: "#ffffff !important" }}>Logout</span>
+        <LogOut size={16} className="mr-2" style={{ color: "#6B7280 !important" }} />
+        <span style={{ color: "#6B7280 !important" }}>Logout</span>
       </button>
     </div>
   );

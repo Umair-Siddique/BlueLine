@@ -98,7 +98,7 @@ const ChatListItem = ({ chatId, chat, title, activeId, onChatClick, onDeleteChat
         backgroundColor: activeId === chat.id
           ? "#1F1F1F" // Changed from blue to black
           : isHovered
-          ? "#1F1F1F"
+          ? "rgba(31, 31, 31, 0.5)" // 50% transparent black
           : "transparent",
         color: activeId === chat.id || isHovered ? "white" : "#222",
       }}
@@ -108,7 +108,7 @@ const ChatListItem = ({ chatId, chat, title, activeId, onChatClick, onDeleteChat
       <div className="flex items-center space-x-3 flex-1 min-w-0">
         <MessageSquare
           size={16}
-          className={`flex-shrink-0 ${activeId === chat.id || isHovered ? '!text-white' : 'text-gray-800'}`}
+          color={activeId === chat.id || isHovered ? "white" : "#1F2937"}
         />
         <div className="flex-1 min-w-0">
           {isEditing ? (
@@ -167,22 +167,25 @@ const ChatListItem = ({ chatId, chat, title, activeId, onChatClick, onDeleteChat
           <>
             {activeId === chat.id && (
               <button
-                onClick={handleEditClick}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all colors:bg-white hover:bg-blue-500"
-                aria-label="Edit title"
-              >
-                <Edit2 size={14} />
-              </button>
+              onClick={handleEditClick}
+              className="opacity-100 p-1 rounded transition-all"
+              aria-label="Edit title"
+            >
+              <Edit2 size={14} color="white" />
+            </button>                                              
             )}
             <button
-              onClick={handleDeleteClick}
-              className={`opacity-0 group-hover:opacity-100 p-1 rounded transition-all hover:bg-red-600 ${
-                activeId === chat.id || isHovered ? '!text-white' : 'text-gray-300'
-              }`}
-              aria-label="Delete chat"
-            >
-              <Trash2 size={14} />
-            </button>
+  onClick={handleDeleteClick}
+  className={`${activeId === chat.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} p-1 rounded transition-all hover:bg-red-600 ${
+    activeId === chat.id || isHovered ? '!text-white' : 'text-gray-300'
+  }`}
+  aria-label="Delete chat"
+>
+  <Trash2 
+    size={14} 
+    color={activeId === chat.id || isHovered ? "white" : "#9CA3AF"} 
+  />
+</button>
           </>
         )}
       </div>
