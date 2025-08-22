@@ -7,7 +7,7 @@ const ProtectedRoute = () => {
 
   if (!authChecked) return <LoadingScreen />;
 
-  return user ? <Outlet /> : <Navigate to="/signin" />;
+  return user ? <Outlet /> : <Navigate to="/Signin" />;
 };
 
 export default ProtectedRoute;

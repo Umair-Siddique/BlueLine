@@ -23,8 +23,8 @@ const App = () => {
           {/* Public Only Routes - Only for non-authenticated users */}
           <Route element={<PublicRoute />}>
             {/* <Route path="/" element={<h1>Landing Page</h1>} /> */}
-            <Route path="/signin" element={<SigninPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/Signin" element={<SigninPage />} />
+            <Route path="/Signup" element={<SignupPage />} />
             
             
             {/* <Route
