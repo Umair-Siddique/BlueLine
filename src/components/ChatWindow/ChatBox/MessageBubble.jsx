@@ -40,12 +40,12 @@ const MessageBubble = ({ msg, isUser, isFirstAIResponse }) => {
 
   const getMessageStyles = (from, isError) => {
     if (from === "user") {
-      return "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-blue-500/25";
+      return "bg-gray-200 text-gray-900 shadow-gray-300/25"; // Light grey for user messages
     }
     if (isError) {
       return "bg-gradient-to-br from-red-900/20 to-red-800/20 text-red-200 border border-red-700/50";
     }
-    return "bg-gray-800 text-gray-200 border border-gray-700/60 shadow-black/20";
+    return "bg-white text-gray-900 border border-gray-200 shadow-gray-200/20"; // White for AI responses
   };
 
   return (

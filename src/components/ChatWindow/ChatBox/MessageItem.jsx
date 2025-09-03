@@ -46,60 +46,69 @@ const MessageItem = memo(({ messages, msg, index }) => {
     return null;
   }
 
-  // AI avatar (left side)
-  const aiAvatar = !isUser && (
-    <div className="flex-shrink-0 mt-1 mr-3 md:mr-4">
-      <div className="relative">
-        <Avatar from={sender} />
-        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-gray-800 rounded-full" />
-      </div>
-    </div>
-  );
-
-  // User avatar (right side)
-  const userAvatar = isUser && (
-    <div className="flex-shrink-0 mt-1 ml-3">
-      <Avatar from={sender} />
-    </div>
-  );
-
   return (
     <div
       key={messageId}
       className={`flex group animate-fade-in ${
-        isUser ? "justify-end pl-8 md:pl-16" : "justify-start pr-8 md:pr-16"
+        isUser ? "justify-end" : "justify-start"
       }`}
     >
-      {/* AI Avatar */}
-      {aiAvatar}
-
-      {/* Message Content */}
-      <div
-        className={`flex flex-col max-w-[75%] md:max-w-[90%] ${
-          isUser ? "items-end ml-auto" : "items-start mr-auto"
-        }`}
-      >
-        <MessageBubble
-          msg={normalizedMsg}
-          isUser={isUser}
-          isFirstAIResponse={isFirstAIResponse}
-        />
-
-        {/* Timestamp */}
-        {timestamp && (
-          <div
-            className={`flex items-center gap-2 mt-2 text-xs text-gray-400 ${
-              isUser ? "flex-row-reverse" : "flex-row"
-            }`}
-          >
-            <div className="w-1 h-1 bg-gray-400 rounded-full" />
-            <time>{timestamp}</time>
+      {/* AI Message Layout (Left Side) */}
+      {!isUser && (
+        <>
+          {/* AI Avatar */}
+          <div className="flex-shrink-0 mt-1 mr-3 md:mr-4">
+            <div className="relative">
+              <Avatar from={sender} />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-gray-800 rounded-full" />
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* User Avatar */}
-      {userAvatar}
+          {/* AI Message Content - Increased width */}
+          <div className="flex flex-col items-start max-w-[95%] md:max-w-[90%]">
+            <MessageBubble
+              msg={normalizedMsg}
+              isUser={isUser}
+              isFirstAIResponse={isFirstAIResponse}
+            />
+
+            {/* Timestamp */}
+            {timestamp && (
+              <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                <div className="w-1 h-1 bg-gray-400 rounded-full" />
+                <time>{timestamp}</time>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* User Message Layout (Right Side) */}
+      {isUser && (
+        <>
+          {/* User Message Content */}
+          <div className="flex flex-col items-end max-w-[70%] md:max-w-[65%]">
+            <MessageBubble
+              msg={normalizedMsg}
+              isUser={isUser}
+              isFirstAIResponse={isFirstAIResponse}
+            />
+
+            {/* Timestamp */}
+            {timestamp && (
+              <div className="flex items-center gap-2 mt-2 text-xs text-gray-400 flex-row-reverse">
+                <div className="w-1 h-1 bg-gray-400 rounded-full" />
+                <time>{timestamp}</time>
+              </div>
+            )}
+          </div>
+
+          {/* User Avatar */}
+          <div className="flex-shrink-0 mt-1 ml-3 md:ml-4">
+            <Avatar from={sender} />
+          </div>
+        </>
+      )}
     </div>
   );
 });

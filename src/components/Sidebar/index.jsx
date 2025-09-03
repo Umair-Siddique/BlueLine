@@ -474,9 +474,20 @@ const Sidebar = ({ activeId, onSelectChat, onNewChat, onDeleteChat }) => {
           opacity: 0.6 !important;
           cursor: not-allowed !important;
         }
-        /* Logout button text white */
-        .sidebar-custom .logout-btn, .sidebar-custom .logout-btn * {
-          color: #fff !important;
+        /* Logout button styles - updated for black text and icon */
+        .sidebar-custom .logout-btn {
+          background: #e5e7eb !important; /* light grey background */
+          color: #000 !important;
+          border: none !important;
+        }
+        .sidebar-custom .logout-btn:hover {
+          background: #d1d5db !important; /* slightly darker grey on hover */
+          color: #000 !important;
+        }
+        .sidebar-custom .logout-btn * {
+          color: #000 !important;
+          fill: #000 !important;
+          stroke: #000 !important;
         }
         /* Chat list item hover: text white */
         .sidebar-custom .chat-list-item:hover,

@@ -15,15 +15,15 @@ const AI_MODELS = [
     description: "Default - Balanced performance",
   },
   {
-    id: "llama-4-scout-17b-16e-instruct",
-    name: "Llama 4 Scout",
-    description: "Open source alternative",
-  },
-  {
     id:"mistral-large-latest",
-    name: "Mistral Large",
+    name: "Mistral AI",
     description: "Mistral's latest model",
   },
+  {
+    id:"gpt-4o",
+    name: "Open AI",
+    description: "Open AI's Premium Model",
+  }
 ];
 
 const ChatWindow = ({ activeId, shouldFetchMessages = false }) => {
