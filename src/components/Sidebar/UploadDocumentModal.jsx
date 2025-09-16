@@ -9,11 +9,19 @@ const UploadDocumentModal = ({ show, onClose, onSubmit, isLoading }) => {
   const fileInputRef = useRef(null);
   const dropdownRef = useRef(null);
 
+  // Mapping from user-friendly labels to API values
+  const typeMapping = {
+    "memory": "brand-positioning",
+    "tension": "insights",
+    "movement": "events",
+    "common": "common"
+  };
+
   const documentTypes = [
-    { value: "common", label: "Common" },
-    { value: "brand-positioning", label: "Brand Positioning" },
-    { value: "insights", label: "Insights" },
-    { value: "events", label: "Events" }
+    { value: "memory", label: "Memory" },
+    { value: "tension", label: "Tension" },
+    { value: "movement", label: "Movement" },
+    { value: "common", label: "Common" }
   ];
 
   const handleFileSelect = (file) => {
@@ -53,15 +61,17 @@ const UploadDocumentModal = ({ show, onClose, onSubmit, isLoading }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedFile && selectedType) {
-      onSubmit(selectedFile, selectedType);
+      // Map the selected type to API value before submitting
+      const apiType = typeMapping[selectedType];
+      onSubmit(selectedFile, apiType);
       setSelectedFile(null);
-      setSelectedType("brand-positioning");
+      setSelectedType("common");
     }
   };
 
   const handleClose = () => {
     setSelectedFile(null);
-    setSelectedType("brand-positioning");
+    setSelectedType("common");
     setDragActive(false);
     setShowDropdown(false);
     onClose();
@@ -119,12 +129,12 @@ const UploadDocumentModal = ({ show, onClose, onSubmit, isLoading }) => {
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-left text-black hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between"
               >
                 <span>{selectedTypeLabel}</span>
-                <ChevronDown 
-                  size={16} 
+                <ChevronDown
+                  size={16}
                   className={`transform transition-transform text-gray-500 ${showDropdown ? 'rotate-180' : ''}`}
                 />
               </button>
-              
+
               {showDropdown && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
                   {documentTypes.map((type) => (
